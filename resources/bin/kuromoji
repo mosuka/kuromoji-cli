@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -e
+
+# detecting kuromoji-cli bin directory
+KUROMOJI_BIN="${BASH_SOURCE-$0}"
+KUROMOJI_BIN="$(dirname "${KUROMOJI_BIN}")"
+KUROMOJI_BIN="$(cd "${KUROMOJI_BIN}"; pwd)"
+
+# set kuromoji-cli lib directory
+KUROMOJI_LIB=${KUROMOJI_BIN}/../lib
+
+# detect java interpreter
+if [ -n "${JAVA_HOME}" ]; then
+  for java in "${JAVA_HOME}"/bin/amd64/java "${JAVA_HOME}"/bin/java; do
+    if [ -x "${java}" ]; then
+      JAVA="${java}"
+      break
+    fi
+  done
+  if [ -z "${JAVA}" ]; then
+    echo >&2 "The currently defined JAVA_HOME (${JAVA_HOME}) refers"
+    echo >&2 "to a location where Java could not be found.  Aborting."
+    echo >&2 "Either fix the JAVA_HOME variable or remove it from the"
+    echo >&2 "environment so that the system PATH will be searched."
+    exit 1
+  fi
+else
+  JAVA=java
+fi
+
+# run kuromoji-cli
+${JAVA} -jar ${KUROMOJI_LIB}/kuromoji-cli-*.jar "$@"

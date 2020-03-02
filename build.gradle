@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+}
+
+group 'com.github.mosuka'
+version '0.1.0'
+description "Kuromoji CLI"
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.apache.lucene:lucene-core:8.4.1"
+    compile "org.apache.lucene:lucene-analyzers-common:8.4.1"
+    compile "org.apache.lucene:lucene-analyzers-kuromoji:8.4.1"
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.10.2'
+    compile "commons-cli:commons-cli:1.4"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.github.mosuka.kuromoji.cli.KuromojiCLI',
+                'Implementation-Title':   'kuromoji-cli',
+                'Implementation-Version': version
+        )
+    }
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+task archiveZip(type: Zip, dependsOn: 'jar') {
+    baseName = 'kuromoji-cli'
+
+    from fileTree('resources')
+
+    from (tasks.jar.archivePath) {
+        into 'lib'
+    }
+}
