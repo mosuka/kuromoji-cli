@@ -38,7 +38,6 @@ A Japanese morphological analysis command-line interface for [Lucene Kuromoji](h
 % unzip ./build/distributions/kuromoji-cli-<VERSION>.zip
 ```
 
-
 ## Usage
 
 ### Basic usage
@@ -97,7 +96,6 @@ EOS
 EOS
 ```
 
-
 ### Output format
 
 kuromoji-cli provides three output formats: `mecab`, `wakati` and `json`.
@@ -105,110 +103,65 @@ kuromoji-cli provides three output formats: `mecab`, `wakati` and `json`.
 `mecab` outputs results in a format like MeCab:
 
 ```
-% echo "お待ちしております。" | ./bin/kuromoji -o mecab
-お待ち  名詞,サ変接続,*,*,*,*,お待ち,オマチ,オマチ
-し      動詞,自立,*,*,サ変・スル,連用形,する,シ,シ
-て      助詞,接続助詞,*,*,*,*,て,テ,テ
-おり    動詞,非自立,*,*,五段・ラ行,連用形,おる,オリ,オリ
-ます    助動詞,*,*,*,特殊・マス,基本形,ます,マス,マス
-。      記号,句点,*,*,*,*,。,。,。
+% echo "関西国際空港限定トートバッグ" | ./bin/kuromoji -o mecab
+関西国際空港    名詞,固有名詞,組織,*,*,*,関西国際空港,カンサイコクサイクウコウ,カンサイコクサイクーコー
+限定    名詞,サ変接続,*,*,*,*,限定,ゲンテイ,ゲンテイ
+トートバッグ    名詞,一般,*,*,*,*,トートバッグ,*,*
 EOS
 ```
 
 `wakati` outputs the token text separated by spaces:
 
 ```
-% echo "お待ちしております。" | ./bin/kuromoji -o wakati
-お待ち し て おり ます 。
+% echo "関西国際空港限定トートバッグ" | ./bin/kuromoji -o wakati
+関西国際空港 限定 トートバッグ
 ```
 
 `json` outputs the token information in JSON format:
 
 ```
-% echo "お待ちしております。" | ./bin/kuromoji -o json | jq .
+% echo "関西国際空港限定トートバッグ" | ./bin/kuromoji -o json | jq .
 [
   {
-    "text": "お待ち",
-    "detail": [
+    "surface": "関西国際空港",
+    "attrs": [
+      "名詞",
+      "固有名詞",
+      "組織",
+      "*",
+      "*",
+      "*",
+      "関西国際空港",
+      "カンサイコクサイクウコウ",
+      "カンサイコクサイクーコー"
+    ]
+  },
+  {
+    "surface": "限定",
+    "attrs": [
       "名詞",
       "サ変接続",
       "*",
       "*",
       "*",
       "*",
-      "お待ち",
-      "オマチ",
-      "オマチ"
+      "限定",
+      "ゲンテイ",
+      "ゲンテイ"
     ]
   },
   {
-    "text": "し",
-    "detail": [
-      "動詞",
-      "自立",
-      "*",
-      "*",
-      "サ変・スル",
-      "連用形",
-      "する",
-      "シ",
-      "シ"
-    ]
-  },
-  {
-    "text": "て",
-    "detail": [
-      "助詞",
-      "接続助詞",
+    "surface": "トートバッグ",
+    "attrs": [
+      "名詞",
+      "一般",
       "*",
       "*",
       "*",
       "*",
-      "て",
-      "テ",
-      "テ"
-    ]
-  },
-  {
-    "text": "おり",
-    "detail": [
-      "動詞",
-      "非自立",
+      "トートバッグ",
       "*",
-      "*",
-      "五段・ラ行",
-      "連用形",
-      "おる",
-      "オリ",
-      "オリ"
-    ]
-  },
-  {
-    "text": "ます",
-    "detail": [
-      "助動詞",
-      "*",
-      "*",
-      "*",
-      "特殊・マス",
-      "基本形",
-      "ます",
-      "マス",
-      "マス"
-    ]
-  },
-  {
-    "text": "。",
-    "detail": [
-      "記号",
-      "句点",
-      "*",
-      "*",
-      "*",
-      "*",
-      "。",
-      "。",
-      "。"
+      "*"
     ]
   }
 ]

@@ -1,3 +1,17 @@
+// Copyright (c) 2020 Minoru Osuka
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// 		http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.github.mosuka.kuromoji.cli;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,32 +32,27 @@ import java.util.List;
 import java.util.Scanner;
 
 public class KuromojiCLI {
-    enum OutputFormat {
-        MECAB,
-        WAKATI,
-        JSON
-    }
+    private Analyzer analyzer;
 
-    String getImplementationTitle() {
-        return getClass().getPackage().getImplementationTitle();
-    }
-
-    String getImplementationVersion() {
-        return getClass().getPackage().getImplementationVersion();
-    }
-
-    List<Token> tokenize(String text, JapaneseTokenizer.Mode mode) throws IOException {
-        // analyzer
-        final Analyzer analyzer = new Analyzer() {
+    public KuromojiCLI(JapaneseTokenizer.Mode mode) {
+        this.analyzer = new Analyzer() {
             @Override
             protected TokenStreamComponents createComponents(String fieldName) {
                 JapaneseTokenizer tokenizer = new JapaneseTokenizer(null, false, mode);
                 return new TokenStreamComponents(tokenizer, tokenizer);
             }
         };
+    }
 
+    enum OutputFormat {
+        MECAB,
+        WAKATI,
+        JSON
+    }
+
+    List<Token> tokenize(String text) throws IOException {
         // tokenize text
-        TokenStream tokenStream = analyzer.tokenStream("ignored", new StringReader(text));
+        TokenStream tokenStream = this.analyzer.tokenStream("ignored", new StringReader(text));
         CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
         PartOfSpeechAttribute partOfSpeechAttribute = tokenStream.getAttribute(PartOfSpeechAttribute.class);
         InflectionAttribute inflectionAttribute = tokenStream.getAttribute(InflectionAttribute.class);
@@ -101,14 +110,14 @@ public class KuromojiCLI {
         switch (outputFormat) {
             case MECAB:
                 for (Token token : tokens) {
-                    System.out.printf("%s\t%s\n", token.surface, String.join(",", token.attrs));
+                    System.out.printf("%s\t%s\n", token.getSurface(), String.join(",", token.getAttrs()));
                 }
                 System.out.println("EOS");
                 break;
             case WAKATI:
                 List<String> surfaces = new ArrayList<>();
                 for (Token token : tokens) {
-                    surfaces.add(token.surface);
+                    surfaces.add(token.getSurface());
                 }
                 System.out.printf("%s\n", String.join(" ", surfaces));
                 System.out.println("EOS");
@@ -123,7 +132,7 @@ public class KuromojiCLI {
                 break;
             default:
                 for (Token token : tokens) {
-                    System.out.printf("%s\t%s\n", token.surface, String.join(",", token.attrs));
+                    System.out.printf("%s\t%s\n", token.getSurface(), String.join(",", token.getAttrs()));
                 }
                 System.out.println("EOS");
                 break;
@@ -132,8 +141,6 @@ public class KuromojiCLI {
     }
 
     public static void main(String args[]) {
-        KuromojiCLI cli = new KuromojiCLI();
-
         Options options = new Options();
         options.addOption(
                 Option.builder("m")
@@ -170,15 +177,15 @@ public class KuromojiCLI {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
-            hf.printHelp(String.format("%s [OPTIONS] [INPUT_FILE]", cli.getImplementationTitle()), options);
+            hf.printHelp(String.format("%s [OPTIONS] [INPUT_FILE]", KuromojiCLI.class.getPackage().getImplementationTitle()), options);
             return;
         }
         if (cmd.hasOption("h")) {
-            hf.printHelp(String.format("%s [OPTIONS] [INPUT_FILE]", cli.getImplementationTitle()), options);
+            hf.printHelp(String.format("%s [OPTIONS] [INPUT_FILE]", KuromojiCLI.class.getPackage().getImplementationTitle()), options);
             return;
         }
         if (cmd.hasOption("v")) {
-            System.out.println(cli.getImplementationVersion());
+            System.out.println(KuromojiCLI.class.getPackage().getImplementationVersion());
             return;
         }
 
@@ -197,7 +204,7 @@ public class KuromojiCLI {
                     break;
                 default:
                     System.out.printf("unexpected tokenization mode: %s\n", cmd.getOptionValue("m"));
-                    hf.printHelp(String.format("%s [OPTIONS] [INPUT_FILE]", cli.getImplementationTitle()), options);
+                    hf.printHelp(String.format("%s [OPTIONS] [INPUT_FILE]", KuromojiCLI.class.getPackage().getImplementationTitle()), options);
                     return;
             }
         }
@@ -217,10 +224,12 @@ public class KuromojiCLI {
                     break;
                 default:
                     System.out.printf("unexpected output format: %s\n", cmd.getOptionValue("o"));
-                    hf.printHelp(String.format("%s [OPTIONS] [INPUT_FILE]", cli.getImplementationTitle()), options);
+                    hf.printHelp(String.format("%s [OPTIONS] [INPUT_FILE]", KuromojiCLI.class.getPackage().getImplementationTitle()), options);
                     return;
             }
         }
+
+        KuromojiCLI cli = new KuromojiCLI(mode);
 
         // read file
         if (cmd.getArgs().length > 0) {
@@ -229,7 +238,7 @@ public class KuromojiCLI {
                 BufferedReader bufferedReader = new BufferedReader(fileReader);
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
-                    List<Token> tokens = cli.tokenize(line, mode);
+                    List<Token> tokens = cli.tokenize(line);
                     cli.print(tokens, outputFormat);
                 }
                 bufferedReader.close();
@@ -244,7 +253,7 @@ public class KuromojiCLI {
             Scanner stdin = new Scanner(System.in);
             while (stdin.hasNextLine()) {
                 String text = stdin.nextLine();
-                List<Token> tokens = cli.tokenize(text, mode);
+                List<Token> tokens = cli.tokenize(text);
                 cli.print(tokens, outputFormat);
             }
         } catch (IOException e) {
