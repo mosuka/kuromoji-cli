@@ -1,4 +1,6 @@
 .gradle
+.settings
+.classpath
 .project
 .vscode
 .idea
