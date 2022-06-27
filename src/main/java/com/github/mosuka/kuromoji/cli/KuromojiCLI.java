@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Minoru Osuka
+// Copyright (c) 2022 Minoru Osuka
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -120,7 +120,6 @@ public class KuromojiCLI {
                     surfaces.add(token.getSurface());
                 }
                 System.out.printf("%s\n", String.join(" ", surfaces));
-                System.out.println("EOS");
                 break;
             case JSON:
                 ObjectMapper mapper = new ObjectMapper();
