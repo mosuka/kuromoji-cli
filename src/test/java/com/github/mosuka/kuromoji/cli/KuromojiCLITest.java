@@ -112,22 +112,6 @@ public class KuromojiCLITest {
         );
         expected.add(
                 new Token(
-                        "関西国際空港",
-                        Arrays.asList(
-                                "名詞",
-                                "固有名詞",
-                                "組織",
-                                "*",
-                                "*",
-                                "*",
-                                "関西国際空港",
-                                "カンサイコクサイクウコウ",
-                                "カンサイコクサイクーコー"
-                        )
-                )
-        );
-        expected.add(
-                new Token(
                         "国際",
                         Arrays.asList(
                                 "名詞",

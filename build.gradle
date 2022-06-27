@@ -23,12 +23,12 @@ repositories {
 }
 
 dependencies {
-    implementation "org.apache.lucene:lucene-core:8.4.1"
-    implementation "org.apache.lucene:lucene-analyzers-common:8.4.1"
-    implementation "org.apache.lucene:lucene-analyzers-kuromoji:8.4.1"
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.2'
-    implementation "commons-cli:commons-cli:1.4"
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    implementation "org.apache.lucene:lucene-core:9.2.0"
+    implementation "org.apache.lucene:lucene-analysis-common:9.2.0"
+    implementation "org.apache.lucene:lucene-analysis-kuromoji:9.2.0"
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+    implementation "commons-cli:commons-cli:1.5.0"
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
 }
 
 shadowJar {

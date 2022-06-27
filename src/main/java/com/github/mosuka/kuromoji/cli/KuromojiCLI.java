@@ -248,8 +248,8 @@ public class KuromojiCLI {
         }
 
         // read stdin
+        Scanner stdin = new Scanner(System.in);
         try {
-            Scanner stdin = new Scanner(System.in);
             while (stdin.hasNextLine()) {
                 String text = stdin.nextLine();
                 List<Token> tokens = cli.tokenize(text);
@@ -257,6 +257,8 @@ public class KuromojiCLI {
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        } finally {
+            stdin.close();
         }
     }
 }
